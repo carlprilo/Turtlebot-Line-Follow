@@ -57,12 +57,12 @@ class Follower:
         # To restrict our search to the 100-row portion of
         # the image corresponding to about the 0.2m distance in front of the Turtlebot
         h, w, d = image.shape
-        search_top =  2*h / 5
-        search_bot = search_top + 150
+        search_top =  h / 3
+        search_bot = search_top + 30
         # search_left = w/3
         # serch_right =32*w/3
-        width = 150
-        dis = 50
+        width = 200
+        dis = 0
         pad = 100
 
         mask[0:search_top, 0:w] = 0
