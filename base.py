@@ -25,6 +25,8 @@ class Follower:
         self.turnFlag=0
         self.startTime=0
 
+        self.startFindTime = 0
+
     def Direction(self,up,down,left,right):
         disul=(up[0]-left[0])*(up[0]-left[0])+(up[1]-left[1])*(up[1]-left[1])
         disur=(up[0]-right[0])*(up[0]-right[0])+(up[1]-right[1])*(up[1]-right[1])
@@ -103,7 +105,9 @@ class Follower:
         image = cv2.Canny(image, 80, 200,3)
 
         #hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-        if self.hasFind ==0:
+        if(self.startFindTime ==0 ):
+            self.startFindTime = datetime.datetime.now().second
+        if self.hasFind ==0 and datetime.datetime.now().second - self.startFindTime > 5 :
             self.FindArrow(img)
 
 
@@ -176,9 +180,11 @@ class Follower:
             if(self.hasFind==0 and self.findArrow == 1):
                 self.twist.linear.x = 0
                 if(self.turnFlag==1):
-                    self.twist.angular.z = -30/60
+                    self.twist.angular.z = -1
+                    print("rrr",self.twist.angular.z)
                 elif(self.turnFlag==-1):
-                    self.twist.angular.z = 30/60
+                    self.twist.angular.z = 1
+                    print ("lll",self.twist.angular.z)
 
             self.cmd_vel_pub.publish(self.twist)
 
@@ -193,9 +199,9 @@ class Follower:
             move_cmd.linear.x = 0.1
 
             if self.signal is True:
-                if self.err < 0:
+                if self.err > 0:
                     self.turn_cmd.angular.z = math.radians(30)
-                elif self.err > 0:
+                elif self.err < 0:
                     self.turn_cmd.angular.z = math.radians(-30)
 
                 self.cmd_vel_pub.publish(self.turn_cmd)
@@ -216,4 +222,3 @@ if __name__ == '__main__':
     rospy.init_node('follow')
     follow = Follower()
     rospy.spin()
-
